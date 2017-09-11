@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <script>
+        function recursive_repeated_sha3(msg, nMsgRepeats, nRecursiveSteps) {
+            var nMsgRepeats = nMsgRepeats + 1;
+            function inner_loop(msg, nRecursiveSteps) {
+                if (nRecursiveSteps == 0) {
+                    return msg;
+                }
+                else {
+                    msg = Array(nMsgRepeats).join(inner_loop(msg, nRecursiveSteps - 1));
+                    return EthJS.Util.bufferToHex(EthJS.Util.sha3(msg)).slice(2);
+                }
+            }
+			return inner_loop(msg, nRecursiveSteps);
+        }
+
+        function hexstrToBuffer(hexstr) {
+            return EthJS.Util.toBuffer(EthJS.Util.addHexPrefix(hexstr));
+        }
+
+        function getAddress(priv) {
+            return EthJS.Util.bufferToHex(EthJS.Util.privateToAddress(priv));
+        }
+
+        function showAddress(priv) {
+            var priv = hexstrToBuffer(document.getElementById("priv").value);
+            if (EthJS.Util.isValidPrivate(priv)) {
+                document.getElementById("address").innerHTML = getAddress(priv);
+                return true;
+            } else {
+                alert("Private key should be exactly 64 chars from {0-9, a-f, A-F} in the range: [1, fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140]");
+                return false;
+            }
+        }
+
+        function makeWallet() {
+            document.body.style.cursor = 'wait';
+            var hardness = Number(document.getElementById("hardness").value);
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var msg = email + password;
+            var privKey = hexstrToBuffer(recursive_repeated_sha3(msg, hardness, hardness));
+            if (EthJS.Util.isValidPrivate(privKey)) {
+                var address = getAddress(privKey);
+                document.getElementById("address1").innerHTML = address;
+                document.getElementById("privateKey").value = EthJS.Util.bufferToHex(privKey).slice(2);
+                document.getElementById("showButton").disabled = false;
+                qrcode.makeCode(address);
+                document.body.style.cursor = 'default';
+                return true;
+            } else {
+                alert("This is very rare situation in which the key generated is outside of [1, fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140]. It is not valid key. You have to change any parameter.");
+                document.body.style.cursor = 'default';
+                return false;
+            }
+        }
+
+        function showSwitch() {
+            var privKeyFiled = document.getElementById("privateKey");
+            var showSwitchButton = document.getElementById("showButton");
+            if (privKeyFiled.type == "password") {
+                privKeyFiled.type = "text";
+                showSwitchButton.value = "hide";
+            } else {
+                privKeyFiled.type = "password";
+                showSwitchButton.value = "show";
+            }
+            return true;
+        }
+
+        function getTransactionCode() {
+            var rawTx = {
+                nonce: EthJS.Util.intToHex(Number(document.getElementById("nonce").value)),
+                gasPrice: EthJS.Util.intToHex(Number(document.getElementById("gasPrice").value)),
+                gasLimit: EthJS.Util.intToHex(Number(document.getElementById("gasLimit").value)),
+                to: document.getElementById("sendTo").value,
+                value: EthJS.Util.intToHex(Number(document.getElementById("amount").value) * 1.0e18),
+                data: '',
+                chainId: 1
+            };
+            var tx = new EthJS.Tx(rawTx);
+
+            if (document.getElementById("privT").value == "") {
+                var hardness = Number(document.getElementById("hardnessT").value);
+                var email = document.getElementById("emailT").value;
+                var password = document.getElementById("passwordT").value;
+                var msg = email + password;
+                var privKey = hexstrToBuffer(recursive_repeated_sha3(msg, hardness, hardness));
+            } else {
+                var privKey = hexstrToBuffer(document.getElementById("privT").value);
+            }
+
+            if (EthJS.Util.isValidPrivate(privKey)) {
+                var address = getAddress(privKey);
+                tx.sign(privKey);
+                var serializedHexTx = '0x' + tx.serialize().toString('hex');
+                document.getElementById("fromAddress").innerHTML = address;
+                document.getElementById("transactionCode").innerHTML = serializedHexTx;
+                qrcodeT.makeCode(serializedHexTx);
+                return true;
+            } else {
+                alert("Private key is not valid.");
+                return false;
+            }
+        }
+
+        function updateComission() {
+            var gasPriceETH = Number(document.getElementById("gasPrice").value) / 10**18;
+            var gasLimit = Number(document.getElementById("gasLimit").value);
+            document.getElementById("comission").innerHTML = gasPriceETH * gasLimit;
+        }
+    </script>
+</head>
+
+<body>
+    <form action="javascript:void(0);" onsubmit="makeWallet()" autocomplete="off">
+        <fieldset>
+            <legend><h1>Make wallet: address and private key</h1></legend>
+            <p> Enter hardness: a value between 1000 and 3000.<br>
+            <input type="number" value=1999 name="hardness" id="hardness" min=1000 max=3000 maxlength=4 required> </p>
+            <p> Your email:<br>
+            <input type="email" name="email" id="email" required></p>
+            <p> Your secret phrase:<br>
+            <input type="password" name="password" id="password" required pattern=".{10,}" required title="10 characters minimum" size=79></p>
+            <p> <strong>Remeber and/or backup all above! There is no restore option!</strong></p>
+            <p> Your private key will be the result of <var>hardness</var> times recursive calls of keccak_256 hash function over <var>message</var>. 
+                Where 1st message is concatenaited <var>email</var> and <var>secret phrase</var> and then repeated, again, <var>hardness</var> times:
+                <br> <code> Step <sup>(1)</sup>: keccak_256[<var>hardness</var> * (<var>email</var> + <var>phrase</var>)].
+                <br> <code> Step <sup><var>(hardness)</var></sup>: keccak_256[Step<sup><var>(hardness-1)</var></sup>]</code>, 
+                <br> where Step<sup>(n)</sup> passed to Step<sup>(n+1)</sup> as a 64 hex chars string (without leading '0x'). </code>
+                <br> This formula and 3 parameter values your entered above will allow you to regenerate your private key
+                at any time.</p>
+            <p> <input type="submit" value="make wallet"> This can take a minute.</p>
+            <p></p>
+            <div id="qrcode"></div>
+            <p>Address: <code style="background-color:gainsboro;" id="address1"></code></p>
+            <p>Privkey: <input id="privateKey" type="password" size=64></code> <input id="showButton" type="button" value="show"
+                    disabled onclick="showSwitch()"></p>
+        </fieldset>
+    </form>
+    <br>
+    <form action="javascript:void(0);" onsubmit="showAddress()">
+        <fieldset>
+            <legend><h1>Get address from any private key</h1></legend>
+            <p>Enter ethereum private key (64 hex chars), value in range [1, fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140]:<br>
+                <input id="priv" type="password" name="priv" value="" maxlength=64 size=64 pattern="^[0-9a-fA-F]{64}$" title="Enter exactly 64 chars from {0-9, a-f, A-F} set">
+                <br><br>
+                <input type="submit" value="get address"></p>
+            <p>Address: <code style="background-color:gainsboro;" id="address"></code></p>
+        </fieldset>
+    </form>
+    <br>
+    <form action="javascript:void(0);" onsubmit="getTransactionCode()">
+        <fieldset>
+            <legend><h1>Generate transaction code</h1></legend>
+            <p>Transaction code is generated with parameters like <var>to</var> and <var>from addreses</var>, <var>amount</var> and others. 
+                Transaction code is signed with your <var>private key</var>. Transaction code carries no private
+                information, could be safely copyed to online computer and published to Ethereum blockchain to actually <em>make</em> a transaction. 
+                You can publish it at several provides like MyEtherWallet.com (under Send offline tab, Step
+                3 at the bottom) or etherscan.io (MISC --> Broadcast TXN).</p>
+            <fieldset>
+                <legend><h2>Details</h2></legend>
+                <p> To: <input type="text" size="42" id="sendTo"></input> PASTE! Do not type by hand.</p>
+                <p> Ether: <input type="text" id="amount"> Amount in ETH to send.</p>
+                <p> Nonce: <input type="text" id="nonce"> Current number of OUT transactions from this address. Check this online (ex: at etherscan.io).</p>
+                <p> Gas Price: <input type="text" id="gasPrice" value=4000000000 onchange="updateComission()"> in wei (10<sup>-18</sup> of ETH).</p>
+                <p> Gas Limit: <input type="text" id="gasLimit" value=21000 onchange="updateComission()"> 21000 is ok for simple ETH send.</p>
+                <p> Total MAX comission in ETH (GasPrice<sup>-18</sup> * GasLimit): <code id="comission"> 0.000084</code>
+            </fieldset>
+            <fieldset>
+                <legend><h2>Sign</h2></legend>
+                <p> Here you need to provide private key. It will be derived from hardness, email and secret on
+                    the fly or can be specify directly.</p>
+                <p> Hardness: <input type="number" name="hardness" id="hardnessT" min=1000 max=3000 maxlength=4 autocomplete="off"> </p>
+                <p> Email: <input type="email" name="email" id="emailT" autocomplete="off"></p>
+                <p> Phrase: <input type="text" name="password" id="passwordT" pattern=".{10,}" title="10 characters minimum"
+                        size=79 autocomplete="off"></p>
+                <p> OR enter private key directly here: 
+                    <input id="privT" type="password" name="priv" value="" maxlength=64 size=64 pattern="^[0-9a-fA-F]{64}$" title="Enter exactly 64 chars from {0-9, a-f, A-F} set"> 
+                    This field has priority.</p>
+
+                <p> <input type="submit" value="get transaction code"> This can take a minute.</p>
+            </fieldset>
+            <fieldset>
+                <legend><h2>Transaction code</h2></legend>
+                <p></p>
+                <p> From address: <code style="background-color:gainsboro;" id="fromAddress"></code></p>
+                <p> Transaction code, publish this to blockchain: <br>
+                <textarea style="background-color:gainsboro;" id="transactionCode" placeholder="" readonly="readonly" rows="5" cols="80"></textarea>
+                <span id="qrcodeT"></span>
+            </fieldset>
+        </fieldset>
+    </form>
+
+    <script type="text/javascript" src="ethereumjs-tx.js"></script>
+    <script type="text/javascript" src="qrcode.js"></script>
+    <script type="text/javascript">
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: "",
+            width: 128,
+            height: 128,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        var qrcodeT = new QRCode(document.getElementById("qrcodeT"), {
+            text: "",
+            width: 196,
+            height: 196,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
+</body>
+
+</html>
