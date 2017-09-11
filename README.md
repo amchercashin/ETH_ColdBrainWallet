@@ -11,9 +11,9 @@ Basically, an offline MyEtherWallet clone with brain wallet generation algorithm
   
      Function [keccak_256](https://en.wikipedia.org/wiki/SHA-3) implemented as recursive (not a standardised SHA-3 version , but one that used inside Ethereum):
      
-     Step_(1) = keccak_256[>hardness * (email + phrase)]
+     Step_(1) = keccak_256[ hardness * ( email + phrase ) ]
      
-     Step_(hardness) = keccak_256[Step(hardness-1)]
+     Step_(hardness) = keccak_256[ Step( hardness - 1 ) ]
      
      So in first step we concatenate _email_ and _phrase_, then repeat and concatenating this string _hardness_ times to get one very long string. Then feed this string to keccak_256.
      
