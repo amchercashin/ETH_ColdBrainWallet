@@ -8,9 +8,12 @@ Ethereum brain wallet that can be inferred from several input parameters with tr
   3. Secret phrase. Actually a password. Should be long enough and not used anywhere else.
   
      Function is recursive:
+     
      Step_(1)_: keccak_256[>hardness * (email + phrase)]
+     
      Step_(hardness)_: keccak_256[Step(hardness-1)]
-Dependencies: 
+
+## Dependencies: 
 1. Browserifyed [ethereumjs-tx](https://github.com/ethereumjs/ethereumjs-tx) v1.3.3 for general Ethereum / crypto functions.
 2. [QRCode.js](https://github.com/davidshimjs/qrcodejs) for QR Codes.
 
