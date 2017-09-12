@@ -2,7 +2,25 @@
 <html>
 
 <head>
-
+        <script type="text/javascript" src="qrcode.js"></script>
+        <script type="text/javascript">
+            var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: "",
+            width: 128,
+            height: 128,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        var qrcodeT = new QRCode(document.getElementById("qrcodeT"), {
+            text: "",
+            width: 196,
+            height: 196,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
     <script>
         function recursive_repeated_sha3(msg, nMsgRepeats, nRecursiveSteps) {
             var nMsgRepeats = nMsgRepeats + 1;
@@ -198,25 +216,7 @@
     </form>
 
     <script type="text/javascript" src="ethereumjs-tx.js"></script>
-    <script type="text/javascript" src="qrcode.js"></script>
-    <script type="text/javascript">
-        var qrcode = new QRCode(document.getElementById("qrcode"), {
-            text: "",
-            width: 128,
-            height: 128,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-        var qrcodeT = new QRCode(document.getElementById("qrcodeT"), {
-            text: "",
-            width: 196,
-            height: 196,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-    </script>
+
 </body>
 
 </html>
