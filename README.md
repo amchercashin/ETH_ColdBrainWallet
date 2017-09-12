@@ -1,5 +1,5 @@
 # ETH_ColdBrainWallet
-Ethereum brain wallet that can be inferred from several input parameters with transactions signing, fully offline.
+Ethereum brain wallet that can be inferred on demand from several input parameters with transaction signing, fully offline.
 
 Basically, an offline MyEtherWallet clone with brain wallet generation algorithm. 
 
