@@ -48,7 +48,6 @@
                 var address = getAddress(privKey);
                 document.getElementById("address1").innerHTML = address;
                 document.getElementById("privateKey").value = EthJS.Util.bufferToHex(privKey).slice(2);
-                document.getElementById("showButton").disabled = false;
                 qrcode.makeCode(address);
                 document.body.style.cursor = 'default';
                 return true;
