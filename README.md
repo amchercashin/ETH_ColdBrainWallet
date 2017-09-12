@@ -5,7 +5,7 @@ Basically, an offline MyEtherWallet clone with brain wallet generation algorithm
 
 These is also standalone version where all js libraries are embedded into single html. This could be more convinient when transferring and using in different devices. It could be used on an old smartphone with no internet access for an example.
 
-You can try it online, but for real personal use you should download it and put on a offline device.
+You can try it [online](https://amchercashin.github.io/ETH_ColdBrainWallet/ColdBrainWallet.html), but for real personal use you should download it from [github repo](https://github.com/amchercashin/ETH_ColdBrainWallet/) and put on a offline device.
 
 ## Goal
 Find a sweet spot between safety from theft, safety from loss and ease of use.
