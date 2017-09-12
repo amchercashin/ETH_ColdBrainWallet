@@ -59,9 +59,9 @@
             }
         }
 
-        function showSwitch() {
-            var privKeyFiled = document.getElementById("privateKey");
-            var showSwitchButton = document.getElementById("showButton");
+        function showSwitch(callerObj, targetId) {
+            var privKeyFiled = document.getElementById(targetId);
+            var showSwitchButton = callerObj;
             if (privKeyFiled.type == "password") {
                 privKeyFiled.type = "text";
                 showSwitchButton.value = "hide";
@@ -125,21 +125,22 @@
             <p> Your email:<br>
             <input type="email" name="email" id="email" required></p>
             <p> Your secret phrase:<br>
-            <input type="password" name="password" id="password" required pattern=".{10,}" required title="10 characters minimum" size=79></p>
+            <input type="password" name="password" id="password" required pattern=".{10,}" required title="10 characters minimum" size=79>
+            <input type="button" value="show" onclick="showSwitch(this, 'password')"></p>
             <p> <strong>Remeber and/or backup all above! There is no restore option!</strong></p>
             <p> Your private key will be the result of <var>hardness</var> times recursive calls of keccak_256 hash function over <var>message</var>. 
                 Where 1st message is concatenaited <var>email</var> and <var>secret phrase</var> and then repeated, again, <var>hardness</var> times:
-                <br> <code> Step <sup>(1)</sup>: keccak_256[<var>hardness</var> * (<var>email</var> + <var>phrase</var>)].
-                <br> <code> Step <sup><var>(hardness)</var></sup>: keccak_256[Step<sup><var>(hardness-1)</var></sup>]</code>, 
-                <br> where Step<sup>(n)</sup> passed to Step<sup>(n+1)</sup> as a 64 hex chars string (without leading '0x'). </code>
+                <br> <code> Step<sup>(1)</sup> = keccak_256[<var>hardness</var> * (<var>email</var> + <var>phrase</var>)].
+                <br> <code> Step<sup><var>(hardness)</var></sup> = keccak_256[<var>hardness</var> * Step<sup><var>(hardness-1)</var></sup>]</code>, 
+                <br> where "+", "*" are string operations: concatenation and multiplication. Do step<sup>(n)</sup> passed to Step<sup>(n+1)</sup> as a 64 hex chars string (without leading '0x') repeated and concatenaited _hardness_ times. </code>
                 <br> This formula and 3 parameter values your entered above will allow you to regenerate your private key
                 at any time.</p>
             <p> <input type="submit" value="make wallet"> This can take a minute.</p>
             <p></p>
             <div id="qrcode"></div>
             <p>Address: <code style="background-color:gainsboro;" id="address1"></code></p>
-            <p>Privkey: <input id="privateKey" type="password" size=64></code> <input id="showButton" type="button" value="show"
-                    disabled onclick="showSwitch()"></p>
+            <p>Privkey: <input id="privateKey" type="password" size=64></code> <input type="button" value="show"
+                    onclick="showSwitch(this, 'privateKey')"></p>
         </fieldset>
     </form>
     <br>
@@ -169,7 +170,7 @@
                 <p> Nonce: <input type="text" id="nonce"> Current number of OUT transactions from this address. Check this online (ex: at etherscan.io).</p>
                 <p> Gas Price: <input type="text" id="gasPrice" value=4000000000 onchange="updateComission()"> in wei (10<sup>-18</sup> of ETH).</p>
                 <p> Gas Limit: <input type="text" id="gasLimit" value=21000 onchange="updateComission()"> 21000 is ok for simple ETH send.</p>
-                <p> Total MAX comission in ETH (GasPrice<sup>-18</sup> * GasLimit): <code id="comission"> 0.000084</code>
+                <p> Total MAX comission in ETH (GasPrice * 10<sup>-18</sup> * GasLimit): <code id="comission"> 0.000084</code>
             </fieldset>
             <fieldset>
                 <legend><h2>Sign</h2></legend>
@@ -178,10 +179,10 @@
                 <p> Hardness: <input type="number" name="hardness" id="hardnessT" min=1000 max=3000 maxlength=4 autocomplete="off"> </p>
                 <p> Email: <input type="email" name="email" id="emailT" autocomplete="off"></p>
                 <p> Phrase: <input type="text" name="password" id="passwordT" pattern=".{10,}" title="10 characters minimum"
-                        size=79 autocomplete="off"></p>
+                        size=79 autocomplete="off"> <input type="button" value="show" onclick="showSwitch(this, 'passwordT')"></p>
                 <p> OR enter private key directly here: 
                     <input id="privT" type="password" name="priv" value="" maxlength=64 size=64 pattern="^[0-9a-fA-F]{64}$" title="Enter exactly 64 chars from {0-9, a-f, A-F} set"> 
-                    This field has priority.</p>
+                    <input type="button" value="show" onclick="showSwitch(this, 'privT')"> This field has priority.</p>
 
                 <p> <input type="submit" value="get transaction code"> This can take a minute.</p>
             </fieldset>
