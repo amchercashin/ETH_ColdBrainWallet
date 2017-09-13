@@ -10,7 +10,7 @@ Find a sweet spot between safety from theft, safety from loss and ease of use.
 
 ## Functionality
 ### Offline Ethereum wallet (private key and address) generation as a function of 3 parameters (inspired by [original idea and code by Vitalik](https://www.reddit.com/r/ethereum/comments/535ovp/is_there_a_javascript_library_for_generating/d7q8hq7/?st=j7gaygm8&sh=435756ff)):
-  1. Hardness: integer value in [1000, 3000] range. This (with the function iteslf) ensures to take some coputational effort to get a key. Thus making it more time consuming to brute-force. 
+  1. Hardness: integer value from [1000, 3000] range. This (with the function iteslf) ensures to take some coputational effort to get a key. Thus making it more time consuming to brute-force. 
   2. Email. To protect from batch key picking attack, where keys generated for every popular password or phrase, then check for positive balance. 
   3. Secret phrase. Actually a password. Should be long enough, not a actual meaningfull phrase in any language, not a "popular" password and not used anywhere else.
   
