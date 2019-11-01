@@ -67,7 +67,9 @@
                 showSwitchButton.value = "hide";
             } else {
                 privKeyFiled.type = "password";
-		document.getElementById("qrcodePK").innerHTML = "<canvas width=\"128\" height=\"128\"></canvas><img alt=\"Scan me!\" style=\"display: none;\">";
+		var qrcodePKdiv = document.getElementById("qrcodePK")
+		qrcodePKdiv.title = "";
+		qrcodePKdiv.innerHTML = "<canvas width=\"128\" height=\"128\"></canvas><img alt=\"Scan me!\" style=\"display: none;\">";
                 showSwitchButton.value = "show";
             }
             return true;
