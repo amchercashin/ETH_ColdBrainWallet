@@ -67,7 +67,7 @@
                 showSwitchButton.value = "hide";
             } else {
                 privKeyFiled.type = "password";
-		qrcodePK.clear();
+		document.getElementById("qrcodePK").innerHTML = "<canvas width=\"128\" height=\"128\"></canvas><img alt=\"Scan me!\" style=\"display: none;\">";
                 showSwitchButton.value = "show";
             }
             return true;
