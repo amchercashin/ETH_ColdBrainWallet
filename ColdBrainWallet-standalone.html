@@ -69,7 +69,6 @@
                 privKeyFiled.type = "password";
 		var qrcodePKdiv = document.createElement("div");
 		qrcodePKdiv.id = "qrcodePK";
-		qrcodePKdiv.innerHTML = "<canvas width=\"128\" height=\"128\"></canvas><img alt=\"Scan me!\" style=\"display: none;\">";
 		document.getElementById("qrcodePK").replaceWith(qrcodePKdiv);
                 showSwitchButton.value = "show";
             }
@@ -20775,6 +20774,14 @@
             text: "",
             width: 196,
             height: 196,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+	var qrcodePK = new QRCode(document.getElementById("qrcodePK"), {
+            text: "",
+            width: 128,
+            height: 128,
             colorDark: "#000000",
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
