@@ -63,9 +63,13 @@
             var showSwitchButton = callerObj;
             if (privKeyFiled.type == "password") {
                 privKeyFiled.type = "text";
+		qrcodePK.makeCode(privKeyFiled.value);
                 showSwitchButton.value = "hide";
             } else {
                 privKeyFiled.type = "password";
+		var qrcodePKdiv = document.createElement("div");
+		qrcodePKdiv.id = "qrcodePK";
+		document.getElementById("qrcodePK").replaceWith(qrcodePKdiv);
                 showSwitchButton.value = "show";
             }
             return true;
@@ -140,6 +144,7 @@
             <p>Address: <code style="background-color:gainsboro;" id="address1"></code></p>
             <p>Privkey: <input id="privateKey" type="password" size=64></code> <input type="button" value="show"
                     onclick="showSwitch(this, 'privateKey')"></p>
+	    <div id="qrcodePK"></div>
         </fieldset>
     </form>
     <br>
