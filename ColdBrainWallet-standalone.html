@@ -67,9 +67,7 @@
                 showSwitchButton.value = "hide";
             } else {
                 privKeyFiled.type = "password";
-		var qrcodePKdiv = document.createElement("div");
-		qrcodePKdiv.id = "qrcodePK";
-		document.getElementById("qrcodePK").replaceWith(qrcodePKdiv);
+		qrcodePK.clear();
                 showSwitchButton.value = "show";
             }
             return true;
