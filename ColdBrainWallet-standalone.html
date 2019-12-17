@@ -63,13 +63,21 @@
             var showSwitchButton = callerObj;
             if (privKeyFiled.type == "password") {
                 privKeyFiled.type = "text";
-		qrcodePK.makeCode(privKeyFiled.value);
+                if (targetId == "privateKey") {qrcodePK.makeCode(document.getElementById("privateKey").value);};
                 showSwitchButton.value = "hide";
             } else {
                 privKeyFiled.type = "password";
-		var qrcodePKdiv = document.getElementById("qrcodePK")
-		qrcodePKdiv.title = "";
-		qrcodePKdiv.innerHTML = "<canvas width=\"128\" height=\"128\"></canvas><img alt=\"Scan me!\" style=\"display: none;\">";
+                if (targetId == "privateKey") {
+                    document.getElementById("qrcodePK").innerHTML = "";
+                    qrcodePK = new QRCode(document.getElementById("qrcodePK"), {
+                    text: "",
+                    width: 128,
+                    height: 128,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                    });
+                };
                 showSwitchButton.value = "show";
             }
             return true;
@@ -144,7 +152,7 @@
             <p>Address: <code style="background-color:gainsboro;" id="address1"></code></p>
             <p>Privkey: <input id="privateKey" type="password" size=64></code> <input type="button" value="show"
                     onclick="showSwitch(this, 'privateKey')"></p>
-	    <div id="qrcodePK"></div>
+            <div id="qrcodePK"></div>
         </fieldset>
     </form>
     <br>
@@ -20728,7 +20736,7 @@
                 this._oQRCode = new QRCodeModel(_getTypeNumber(sText, this._htOption.correctLevel), this._htOption.correctLevel);
                 this._oQRCode.addData(sText);
                 this._oQRCode.make();
-                this._el.title = sText;
+                this._el.title = "";
                 this._oDrawing.draw(this._oQRCode);			
                 this.makeImage();
             };
@@ -20769,18 +20777,18 @@
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
         });
-        var qrcodeT = new QRCode(document.getElementById("qrcodeT"), {
+        var qrcodePK = new QRCode(document.getElementById("qrcodePK"), {
             text: "",
-            width: 196,
-            height: 196,
+            width: 128,
+            height: 128,
             colorDark: "#000000",
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
         });
-	var qrcodePK = new QRCode(document.getElementById("qrcodePK"), {
+        var qrcodeT = new QRCode(document.getElementById("qrcodeT"), {
             text: "",
-            width: 128,
-            height: 128,
+            width: 196,
+            height: 196,
             colorDark: "#000000",
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
